@@ -22,7 +22,7 @@ pip3 install -r requirements.txt
 `PYTHONPATH` を通して追加する.
 
 ```
-echo 'export PYTHONPATH=../..' >> ~/.bashrc
+echo 'export PYTHONPATH=../../..' >> ~/.bashrc
 source ~/.bashrc
 ```
 
