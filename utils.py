@@ -3,9 +3,7 @@ from typing import Union
 
 from bs4 import BeautifulSoup
 from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.chrome.service import Service
+from selenium.webdriver import chrome
 from yt_dlp import YoutubeDL
 
 
@@ -54,13 +52,13 @@ def get_html(url: str, sleep_time: int = 5) -> BeautifulSoup:
         HTML情報を持ったBeautifulSoupインスタンス
     """
     # Chromeのオプション設定
-    options = Options()
+    options = chrome.options.Options()
     options.add_argument("--headless")
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
 
     # ChromeDriverのパスを指定(パスを通していれば不要)
-    service = Service()
+    service = chrome.options.Service()
 
     # ドライバ起動
     driver = webdriver.Chrome(service=service, options=options)
