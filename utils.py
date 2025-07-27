@@ -58,7 +58,7 @@ def get_html(url: str, sleep_time: int = 5) -> BeautifulSoup:
     options.add_argument("--disable-dev-shm-usage")
 
     # ChromeDriverのパスを指定(パスを通していれば不要)
-    service = chrome.options.Service()
+    service = chrome.service.Service()
 
     # ドライバ起動
     driver = webdriver.Chrome(service=service, options=options)
