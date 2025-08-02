@@ -1,5 +1,5 @@
 import time
-from typing import Union
+from typing import Callable, Optional, Union
 
 from bs4 import BeautifulSoup
 from selenium import webdriver
@@ -35,7 +35,10 @@ def dl_youtube(
     yt_opts.download(url)
 
 
-def get_html(url: str, sleep_time: int = 5) -> BeautifulSoup:
+def get_html(
+    url: str, sleep_time: int = 5, optional: Optional[Callable] = None,
+    optional_kwargs: dict = {}
+) -> BeautifulSoup:
     """
     スクレイピングする関数
 
@@ -45,6 +48,8 @@ def get_html(url: str, sleep_time: int = 5) -> BeautifulSoup:
         URLを指定
     sleep_time: int = 5
         URL情報取得直後の待機時間(秒)
+    optional: Optional[Callable] = None
+        必要に応じて適用する関数
 
     Returns
     ----------
@@ -66,6 +71,12 @@ def get_html(url: str, sleep_time: int = 5) -> BeautifulSoup:
     # ターゲットページを開く
     driver.get(url)
     time.sleep(sleep_time)
+
+    # オプションがあれば実行する
+    if optional is not None:
+        optional(driver, **optional_kwargs)
+
+    # BeautifulSoupで返す
     body_html = driver.find_element(
         "tag name", "body"
     ).get_attribute("innerHTML")
