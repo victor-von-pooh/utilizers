@@ -1,10 +1,80 @@
+import os
 import time
 from typing import Callable, Optional, Union
 
 from bs4 import BeautifulSoup
+import matplotlib.pyplot as plt
 from selenium import webdriver
 from selenium.webdriver import chrome
 from yt_dlp import YoutubeDL
+
+
+class VisualDirectory():
+    def __init__(self, root_path: str):
+        self.root_path = root_path
+
+    def build_tree(self, path: str, prefix: str = "") -> list:
+        """
+        ディレクトリ構造を文字列のリストとしてまとめるメソッド
+
+        Parameters
+        ----------
+        path: str
+            パス名
+        prefix: str = ""
+            ディレクトリ名やファイル名の前の接頭辞
+
+        Returns
+        ----------
+        lines: list
+            階層表現リスト
+        """
+        # ディレクトリとファイルでそれぞれソート
+        dirs = []
+        files = []
+        for f in os.listdir(path):
+            if os.path.isdir(os.path.join(path, f)):
+                dirs.append(f)
+            else:
+                files.append(f)
+        entries = sorted(dirs) + sorted(files)
+
+        # 階層表現を lines に格納
+        lines = []
+        for i, entry in enumerate(entries):
+            full_path = os.path.join(path, entry)
+            connector = "└── " if i == len(entries) - 1 else "├── "
+            lines.append(prefix + connector + entry)
+            if os.path.isdir(full_path):
+                extension = "      " if i == len(entries) - 1 else "│     "
+                lines.extend(self.build_tree(full_path, prefix + extension))
+
+        return lines
+    
+    def visualize(self, output_path: str) -> None:
+        """
+        ディレクトリ構造を画像として保存するメソッド
+
+        Parameters
+        ----------
+        output_path : str
+            保存する画像ファイルのパス
+
+        Returns
+        ----------
+        None
+        """
+        # build_tree メソッドを使ってディレクトリ構造を取得
+        root_alias = os.path.basename(os.path.abspath(self.root_path))
+        tree_lines = [root_alias] + self.build_tree(self.root_path)
+
+        # 可視化処理
+        plt.figure(figsize=(10, 0.01 * len(tree_lines)))
+        plt.axis("off")
+        for i, line in enumerate(tree_lines):
+            plt.text(0, len(tree_lines) - i, line, fontsize=10)
+        plt.savefig(output_path, bbox_inches="tight", dpi=200)
+        plt.close()
 
 
 def dl_youtube(
