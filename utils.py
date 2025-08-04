@@ -1,9 +1,11 @@
 import os
 import time
 from typing import Callable, Optional, Union
+from urllib.parse import quote
 
 from bs4 import BeautifulSoup
 import matplotlib.pyplot as plt
+import requests
 from selenium import webdriver
 from selenium.webdriver import chrome
 from yt_dlp import YoutubeDL
@@ -13,7 +15,7 @@ class VisualDirectory():
     def __init__(self, root_path: str):
         self.root_path = root_path
 
-    def build_tree(self, path: str, prefix: str = "") -> list:
+    def build_tree(self, path: str, prefix: str = "") -> list[str]:
         """
         ディレクトリ構造を文字列のリストとしてまとめるメソッド
 
@@ -26,7 +28,7 @@ class VisualDirectory():
 
         Returns
         ----------
-        lines: list
+        lines: list[str]
             階層表現リスト
         """
         # ディレクトリとファイルでそれぞれソート
@@ -77,6 +79,32 @@ class VisualDirectory():
         plt.close()
 
 
+def address_to_latlon(address: str) -> dict:
+    """
+    住所から緯度経度を取得する関数
+
+    Parameters
+    ----------
+    address: str
+        住所
+
+    Returns
+    ----------
+    latlon_dict: dict
+        緯度経度の辞書
+    """
+    # 国土地理院のURLからデータを取得
+    url = "https://msearch.gsi.go.jp/address-search/AddressSearch?q="
+    address_quote = quote(address)
+    response = requests.get(url + address_quote)
+
+    # 緯度経度の情報を抽出して辞書として保存
+    latlon = response.json()[0]["geometry"]["coordinates"]
+    latlon_dict = {"lat": latlon[1], "lon": latlon[0]}
+
+    return latlon_dict
+
+
 def dl_youtube(
     url: Union[str, list[str]], file_path: str, format: str = "mp4"
 ) -> None:
@@ -120,6 +148,8 @@ def get_html(
         URL情報取得直後の待機時間(秒)
     optional: Optional[Callable] = None
         必要に応じて適用する関数
+    optional_kwargs: dict = {}
+        必要に応じて適用する関数の引数の辞書
 
     Returns
     ----------
