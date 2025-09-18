@@ -5,7 +5,9 @@ from urllib.parse import quote
 
 from bs4 import BeautifulSoup
 import matplotlib.pyplot as plt
+import pandas as pd
 import requests
+from scipy.stats import skew, kurtosis
 from selenium import webdriver
 from selenium.webdriver import chrome
 from yt_dlp import YoutubeDL
@@ -52,7 +54,7 @@ class VisualDirectory():
                 lines.extend(self.build_tree(full_path, prefix + extension))
 
         return lines
-    
+
     def visualize(self, output_path: str) -> None:
         """
         ディレクトリ構造を画像として保存するメソッド
@@ -114,7 +116,7 @@ def dl_youtube(
     Parameters
     ----------
     url: Union[str, list[str]]
-        URLを指定(複数指定可)
+        URL を指定(複数指定可)
     file_path: str
         保存先のパス名
     format: str = "mp4"
@@ -143,9 +145,9 @@ def get_html(
     Parameters
     ----------
     url: str
-        URLを指定
+        URL を指定
     sleep_time: int = 5
-        URL情報取得直後の待機時間(秒)
+        URL 情報取得直後の待機時間(秒)
     optional: Optional[Callable] = None
         必要に応じて適用する関数
     optional_kwargs: dict = {}
@@ -154,7 +156,7 @@ def get_html(
     Returns
     ----------
     soup: BeautifulSoup
-        HTML情報を持ったBeautifulSoupインスタンス
+        HTML 情報を持った BeautifulSoup インスタンス
     """
     # Chromeのオプション設定
     options = chrome.options.Options()
@@ -183,3 +185,28 @@ def get_html(
     soup = BeautifulSoup(body_html, "html.parser")
 
     return soup
+
+
+def show_stats(df: pd.Series) -> None:
+    """
+    スクレイピングする関数
+
+    Parameters
+    ----------
+    df: pd.Series
+        統計量を求めたい Pandas の Series データ
+
+    Returns
+    ----------
+    None
+    """
+    # 各統計量のデータを辞書で管理
+    stats = {
+        "カウント": df.count(), "最小値": df.min(), "第1四分位数": df.quantile(0.25),
+        "中央値": df.median(), "第3四分位数": df.quantile(0.75), "最大値": df.max(),
+        "平均": df.mean(), "標準偏差": df.std(), "歪度": skew(df), "尖度": kurtosis(df)
+    }
+
+    # Series で表示
+    stats_series = pd.DataFrame(stats)
+    print(stats_series)
