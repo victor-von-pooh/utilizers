@@ -1,3 +1,4 @@
+from collections import Counter
 import os
 import time
 from typing import Callable, Optional, Union
@@ -187,26 +188,43 @@ def get_html(
     return soup
 
 
-def show_stats(df: pd.Series) -> None:
+def stats_analysis(df: pd.DataFrame) -> pd.DataFrame:
     """
-    スクレイピングする関数
+    統計量を分析する関数
 
     Parameters
     ----------
-    df: pd.Series
-        統計量を求めたい Pandas の Series データ
+    df: pd.DataFrame
+        統計量を求めたい Pandas の DataFrame データ
 
     Returns
     ----------
-    None
+    stats_df: pd.DataFrame
+        統計量をまとめたデータフレーム
     """
-    # 各統計量のデータを辞書で管理
-    stats = {
-        "カウント": df.count(), "最小値": df.min(), "第1四分位数": df.quantile(0.25),
-        "中央値": df.median(), "第3四分位数": df.quantile(0.75), "最大値": df.max(),
-        "平均": df.mean(), "標準偏差": df.std(), "歪度": skew(df), "尖度": kurtosis(df)
-    }
+    # 統計量計算が可能な型のデータのみ抽出
+    extracted_df = df.select_dtypes(include=["int64", "float64"]).copy()
 
-    # Series で表示
-    stats_series = pd.DataFrame(stats)
-    print(stats_series)
+    # カラムごとに各統計量のデータを辞書で管理
+    data = []
+    for col in extracted_df.columns:
+        non_null = extracted_df[extracted_df[col].notna()][col]
+        uniques = len(Counter(non_null.to_list()))
+        stats = {
+            "カウント": extracted_df[col].count(), "ユニーク数": uniques,
+            "最小値": extracted_df[col].min(),
+            "第1四分位数": extracted_df[col].quantile(0.25),
+            "中央値": extracted_df[col].median(),
+            "第3四分位数": extracted_df[col].quantile(0.75),
+            "最大値": extracted_df[col].max(), "平均値": extracted_df[col].mean(),
+            "標準偏差": extracted_df[col].std(),
+            "歪度": skew(non_null), "尖度": kurtosis(non_null)
+        }
+        data.append(pd.Series(stats))
+
+    # 統計量データフレームの作成
+    stats_df = pd.DataFrame(dict(zip(extracted_df.columns, data))).T
+    stats_df = stats_df.astype({"カウント": int, "ユニーク数": int})
+    stats_df = stats_df.sort_values("カウント", ascending=False)
+
+    return stats_df
