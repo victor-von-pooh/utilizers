@@ -1,5 +1,5 @@
 # YouTube
-YouTubeから動画をダウンロードする.
+YouTube から動画をダウンロードする.
 
 ## フォルダ概要
 - `output`
