@@ -15,6 +15,7 @@ dir_path = "../output"
 
 # 論文のダウンロード
 for url, title in zip(urls, titles):
+    redirect = url.replace("/abs/", "/pdf/")
     path = f"{dir_path}/{title}.pdf"
-    dl_pdf(url, path)
+    dl_pdf(redirect, path)
 print("Done.")
