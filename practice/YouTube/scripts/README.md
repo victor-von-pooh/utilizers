@@ -1,5 +1,5 @@
 # scripts
-`utils.py` から `dl_youtube()` 関数を使って, `cfg.txt` に記載したYouTubeのリンク全てを `main.py` の実行で `utilizers/practice/YouTube/output` の中に保存する.
+`utils.py` から `dl_youtube()` 関数を使って, `cfg.txt` に記載した YouTube のリンク全てを `main.py` の実行で `utilizers/practice/YouTube/output` の中に保存する.
 
 ## 実行手順
 1. `cfg.txt` に以下のようにURLを貼り付けて保存する
