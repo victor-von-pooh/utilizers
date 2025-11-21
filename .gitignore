@@ -3,6 +3,7 @@ venv/
 __pycache__
 
 practice/LocateTheaters/output
+practice/PaperFetch/output
 practice/StockCheck/output
 practice/VisualizeDirectory/output
 practice/YouTube/output
