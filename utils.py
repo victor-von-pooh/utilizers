@@ -96,7 +96,7 @@ def address_to_latlon(address: str) -> dict:
     latlon_dict: dict
         緯度経度の辞書
     """
-    # 国土地理院のURLからデータを取得
+    # 国土地理院の URL からデータを取得
     url = "https://msearch.gsi.go.jp/address-search/AddressSearch?q="
     address_quote = quote(address)
     response = requests.get(url + address_quote)
@@ -112,7 +112,7 @@ def dl_youtube(
     url: Union[str, list[str]], file_path: str, format: str = "mp4"
 ) -> None:
     """
-    YouTube動画をダウンロードする関数
+    YouTube 動画をダウンロードする関数
 
     Parameters
     ----------
@@ -159,13 +159,13 @@ def get_html(
     soup: BeautifulSoup
         HTML 情報を持った BeautifulSoup インスタンス
     """
-    # Chromeのオプション設定
+    # Chrome のオプション設定
     options = chrome.options.Options()
     options.add_argument("--headless")
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
 
-    # ChromeDriverのパスを指定(パスを通していれば不要)
+    # ChromeDriver のパスを指定(パスを通していれば不要)
     service = chrome.service.Service()
 
     # ドライバ起動
@@ -179,7 +179,7 @@ def get_html(
     if optional is not None:
         optional(driver, **optional_kwargs)
 
-    # BeautifulSoupで返す
+    # BeautifulSoup で返す
     body_html = driver.find_element(
         "tag name", "body"
     ).get_attribute("innerHTML")
@@ -228,3 +228,29 @@ def stats_analysis(df: pd.DataFrame) -> pd.DataFrame:
     stats_df = stats_df.sort_values("カウント", ascending=False)
 
     return stats_df
+
+
+def dl_pdf(url: str, file_path: str) -> None:
+    """
+    PDFファイルをダウンロードする関数
+
+    Parameters
+    ----------
+    url: str
+        URL を指定
+    file_path: str
+        保存先のパス名
+
+    Returns
+    ----------
+    None
+    """
+    # PDF ファイルを取得
+    response = requests.get(url)
+
+    # 保存先にファイルを書き込み
+    with open(file_path, "wb") as f:
+        f.write(response.content)
+
+    # ダウンロード完了のメッセージを表示
+    print(f"Downloaded: {file_path}")
