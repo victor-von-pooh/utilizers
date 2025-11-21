@@ -108,6 +108,32 @@ def address_to_latlon(address: str) -> dict:
     return latlon_dict
 
 
+def dl_pdf(url: str, file_path: str) -> None:
+    """
+    PDF ファイルをダウンロードする関数
+
+    Parameters
+    ----------
+    url: str
+        URL を指定
+    file_path: str
+        保存先のパス名
+
+    Returns
+    ----------
+    None
+    """
+    # PDF ファイルを取得
+    response = requests.get(url)
+
+    # 保存先にファイルを書き込み
+    with open(file_path, "wb") as f:
+        f.write(response.content)
+
+    # ダウンロード完了のメッセージを表示
+    print(f"Downloaded: {file_path}")
+
+
 def dl_youtube(
     url: Union[str, list[str]], file_path: str, format: str = "mp4"
 ) -> None:
@@ -228,29 +254,3 @@ def stats_analysis(df: pd.DataFrame) -> pd.DataFrame:
     stats_df = stats_df.sort_values("カウント", ascending=False)
 
     return stats_df
-
-
-def dl_pdf(url: str, file_path: str) -> None:
-    """
-    PDFファイルをダウンロードする関数
-
-    Parameters
-    ----------
-    url: str
-        URL を指定
-    file_path: str
-        保存先のパス名
-
-    Returns
-    ----------
-    None
-    """
-    # PDF ファイルを取得
-    response = requests.get(url)
-
-    # 保存先にファイルを書き込み
-    with open(file_path, "wb") as f:
-        f.write(response.content)
-
-    # ダウンロード完了のメッセージを表示
-    print(f"Downloaded: {file_path}")
