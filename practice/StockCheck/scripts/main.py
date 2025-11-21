@@ -17,18 +17,18 @@ def search_web(
     month: int, sleep_time: int = 5
 ) -> None:
     """
-    WEB内で検索する関数
+    WEB 内で検索する関数
 
     Parameters
     ----------
     driver: webdriver.Chrome
-        Seleniumで作成したドライバ
+        Selenium で作成したドライバ
     year: int
         検索対象年
     month: int
         検索対象月
     sleep_time: int = 5
-        URL情報取得直後の待機時間(秒)
+        URL 情報取得直後の待機時間(秒)
 
     Returns
     ----------
@@ -70,14 +70,14 @@ def single_fetch(soup: BeautifulSoup) -> pd.DataFrame:
     Parameters
     ----------
     soup: BeautifulSoup
-        HTML情報を持ったBeautifulSoupインスタンス
+        HTML 情報を持った BeautifulSoup インスタンス
 
     Returns
     ----------
     df: pd.DataFrame
         取得したデータのデータフレーム
     """
-    # WEBから必要なデータのリストを抽出
+    # WEB から必要なデータのリストを抽出
     table = soup.find("div", class_="idx-archive table-responsive-md")
     data_list = table.find_all("tr")
 
@@ -95,20 +95,20 @@ def single_fetch(soup: BeautifulSoup) -> pd.DataFrame:
             # データをカラムごとに取得
             tds = data.find_all("td")
 
-            # 1つ目は日付なのでdatetime型として保存
+            # 1つ目は日付なので datetime 型として保存
             date = str(tds[0].text).replace(".", "-")
             date = dt.strptime(date, "%Y-%m-%d").date()
             target = [date]
 
-            # それ以外は値なのでfloat型として保存
+            # それ以外は値なので float 型として保存
             for i in range(1, 5):
                 tmp = float(str(tds[i].text).replace(",", ""))
                 target.append(tmp)
 
-            # targetsリストに格納
+            # targets リストに格納
             targets.append(target)
 
-    # targetsを転置させてカラムと紐付けた辞書を作成
+    # targets を転置させてカラムと紐付けた辞書を作成
     targets = np.array(targets).T
     df_dict = dict(zip(cols, targets))
 
@@ -118,14 +118,14 @@ def single_fetch(soup: BeautifulSoup) -> pd.DataFrame:
     return df
 
 
-# 日経平均アーカイブのWEBサイトのURL
+# 日経平均アーカイブの WEB サイトの URL
 url = "https://indexes.nikkei.co.jp/nkave/archives/data"
 
 # 1986年から2024年までのリストを用意
 years = list(range(1986, 2025))
 months = list(range(1, 13))
 
-# データフレームをdfsに格納する
+# データフレームを dfs に格納する
 dfs = []
 for year in years:
     for month in months:
@@ -137,7 +137,7 @@ for year in years:
         df = single_fetch(tmp_soup)
         dfs.append(df)
 
-# データフレームを結合してCSVファイルとして保存
+# データフレームを結合して CSV ファイルとして保存
 all_df = pd.concat(dfs, ignore_index=True)
 file_path = "../output/stocks.csv"
 all_df.to_csv(file_path, index=False)

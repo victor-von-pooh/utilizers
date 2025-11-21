@@ -1,6 +1,5 @@
 from utils import dl_youtube
 
-
 # configファイルを読み込む
 cfg_path = "cfg.txt"
 with open(cfg_path) as f:

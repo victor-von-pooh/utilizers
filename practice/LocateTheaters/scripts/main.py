@@ -5,7 +5,6 @@ import pandas as pd
 
 from utils import address_to_latlon
 
-
 # 住所のファイルを読み込む
 address_data_path = "addresses.json"
 with open(address_data_path) as f:
@@ -41,6 +40,6 @@ for _, row in df.iterrows():
         popup=row["劇場名"], tooltip=row["劇場名"]
     ).add_to(m)
 
-# 地図をHTMLとして保存
+# 地図を HTML として保存
 output_path = "../output/theaters_map.html"
 m.save(output_path)
